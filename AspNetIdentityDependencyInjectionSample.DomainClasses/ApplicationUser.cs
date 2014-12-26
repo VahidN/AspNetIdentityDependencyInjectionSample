@@ -5,7 +5,7 @@ namespace AspNetIdentityDependencyInjectionSample.DomainClasses
 {
     public class ApplicationUser : IdentityUser<int, CustomUserLogin, CustomUserRole, CustomUserClaim>
     {
-        // ساير خواص اضافي در اينجا
+        // Add other properties here
 
         [ForeignKey("AddressId")]
         public virtual Address Address { get; set; }

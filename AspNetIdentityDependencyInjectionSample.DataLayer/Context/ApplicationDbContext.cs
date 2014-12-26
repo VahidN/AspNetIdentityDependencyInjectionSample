@@ -18,12 +18,17 @@ namespace AspNetIdentityDependencyInjectionSample.DataLayer.Context
             : base("connectionString1")
         {
             //this.Database.Log = data => System.Diagnostics.Debug.WriteLine(data);
-            //فقط تعريف شده تا يك برك پوينت در اينجا قرار داده شود براي آزمايش تعداد بار فراخواني آن
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void OnModelCreating(DbModelBuilder builder)
         {
-            base.Dispose(disposing); //فقط تعريف شده تا يك برك پوينت در اينجا قرار داده شود براي آزمايش فراخواني آن
+            base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>().ToTable("Users");
+            builder.Entity<CustomRole>().ToTable("Roles");
+            builder.Entity<CustomUserClaim>().ToTable("UserClaims");
+            builder.Entity<CustomUserRole>().ToTable("UserRoles");
+            builder.Entity<CustomUserLogin>().ToTable("UserLogins");
         }
 
         public new IDbSet<TEntity> Set<TEntity>() where TEntity : class
