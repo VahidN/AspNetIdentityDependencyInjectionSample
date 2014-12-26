@@ -1,0 +1,40 @@
+﻿@model IEnumerable<AspNetIdentityDependencyInjectionSample.DomainClasses.Product>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Products</h2>
+
+<p>
+    @Html.ActionLink("Create New Product", "Create") | @Html.ActionLink("Create New Category", "CreateCategory")
+</p>
+<table class="table table-striped table-hover table-bordered table-condensed">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            Category
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+        </tr>
+    }
+
+</table>
