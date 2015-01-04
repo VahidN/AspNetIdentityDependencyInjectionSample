@@ -50,16 +50,21 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                       .HybridHttpOrThreadLocalScoped()
                       .Use<ApplicationSignInManager>();
 
-                ioc.For<IApplicationUserManager>()
-                      .HybridHttpOrThreadLocalScoped()
-                      .Use<ApplicationUserManager>();
-
                 ioc.For<IApplicationRoleManager>()
                       .HybridHttpOrThreadLocalScoped()
                       .Use<ApplicationRoleManager>();
 
-                ioc.For<IIdentityMessageService>().Use<SmsService>();
-                ioc.For<IIdentityMessageService>().Use<EmailService>();
+                // map same interface to different concrete classes
+                ioc.For<IIdentityMessageService>().Use<SmsService>().Named("smsService");
+                ioc.For<IIdentityMessageService>().Use<EmailService>().Named("emailService");
+
+                ioc.For<IApplicationUserManager>().HybridHttpOrThreadLocalScoped()
+                   .Use<ApplicationUserManager>()
+                   .Ctor<IIdentityMessageService>("smsService")
+                   .Is(context => context.GetInstance<IIdentityMessageService>("smsService"))
+                   .Ctor<IIdentityMessageService>("emailService")
+                   .Is(context => context.GetInstance<IIdentityMessageService>("emailService"));
+
                 ioc.For<ICustomRoleStore>()
                       .HybridHttpOrThreadLocalScoped()
                       .Use<CustomRoleStore>();
