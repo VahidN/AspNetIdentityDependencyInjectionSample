@@ -29,11 +29,13 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
             return new Container(ioc =>
             {
                 ioc.For<IUnitOfWork>()
-                      .HybridHttpOrThreadLocalScoped()
-                      .Use<ApplicationDbContext>();
+                   .HybridHttpOrThreadLocalScoped()
+                   .Use<ApplicationDbContext>();
 
-                ioc.For<ApplicationDbContext>().HybridHttpOrThreadLocalScoped().Use<ApplicationDbContext>();
-                ioc.For<DbContext>().HybridHttpOrThreadLocalScoped().Use<ApplicationDbContext>();
+                ioc.For<ApplicationDbContext>().HybridHttpOrThreadLocalScoped()
+                   .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());
+                ioc.For<DbContext>().HybridHttpOrThreadLocalScoped()
+                   .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());
 
                 ioc.For<IUserStore<ApplicationUser, int>>()
                     .HybridHttpOrThreadLocalScoped()
@@ -64,6 +66,9 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                    .Ctor<IIdentityMessageService>("emailService").Is<EmailService>()
                    .Setter<IIdentityMessageService>(userManager => userManager.SmsService).Is<SmsService>()
                    .Setter<IIdentityMessageService>(userManager => userManager.EmailService).Is<EmailService>();
+
+                ioc.For<ApplicationUserManager>().HybridHttpOrThreadLocalScoped()
+                   .Use(context => (ApplicationUserManager)context.GetInstance<IApplicationUserManager>());
 
                 ioc.For<ICustomRoleStore>()
                       .HybridHttpOrThreadLocalScoped()
