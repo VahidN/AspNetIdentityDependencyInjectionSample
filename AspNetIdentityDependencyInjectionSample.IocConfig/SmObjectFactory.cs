@@ -55,15 +55,15 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                       .Use<ApplicationRoleManager>();
 
                 // map same interface to different concrete classes
-                ioc.For<IIdentityMessageService>().Use<SmsService>().Named("smsService");
-                ioc.For<IIdentityMessageService>().Use<EmailService>().Named("emailService");
+                ioc.For<IIdentityMessageService>().Use<SmsService>();
+                ioc.For<IIdentityMessageService>().Use<EmailService>();
 
                 ioc.For<IApplicationUserManager>().HybridHttpOrThreadLocalScoped()
                    .Use<ApplicationUserManager>()
-                   .Ctor<IIdentityMessageService>("smsService")
-                   .Is(context => context.GetInstance<IIdentityMessageService>("smsService"))
-                   .Ctor<IIdentityMessageService>("emailService")
-                   .Is(context => context.GetInstance<IIdentityMessageService>("emailService"));
+                   .Ctor<IIdentityMessageService>("smsService").Is<SmsService>()
+                   .Ctor<IIdentityMessageService>("emailService").Is<EmailService>()
+                   .Setter<IIdentityMessageService>(userManager => userManager.SmsService).Is<SmsService>()
+                   .Setter<IIdentityMessageService>(userManager => userManager.EmailService).Is<EmailService>();
 
                 ioc.For<ICustomRoleStore>()
                       .HybridHttpOrThreadLocalScoped()

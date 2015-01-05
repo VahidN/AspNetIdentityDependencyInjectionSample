@@ -14,9 +14,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         : UserManager<ApplicationUser, int>, IApplicationUserManager
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IIdentityMessageService _emailService;
         private readonly IApplicationRoleManager _roleManager;
-        private readonly IIdentityMessageService _smsService;
         private readonly IUserStore<ApplicationUser, int> _store;
 
         public ApplicationUserManager(IUserStore<ApplicationUser, int> store,
@@ -29,8 +27,8 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             _store = store;
             _roleManager = roleManager;
             _dataProtectionProvider = dataProtectionProvider;
-            _smsService = smsService;
-            _emailService = emailService;
+            this.SmsService = smsService;
+            this.EmailService = emailService;
 
             createApplicationUserManager();
         }
@@ -128,8 +126,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
                 Subject = "SecurityCode",
                 BodyFormat = "Your security code is {0}"
             });
-            this.EmailService = _emailService;
-            this.SmsService = _smsService;
 
             if (_dataProtectionProvider != null)
             {
