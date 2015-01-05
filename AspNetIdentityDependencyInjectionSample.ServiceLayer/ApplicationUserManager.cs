@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
+using LinqToExcel;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security.Cookies;
@@ -88,6 +90,21 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             if (!rolesForUser.Contains(role.Name))
             {
                 var result = this.AddToRole(user.Id, role.Name);
+            }
+        }
+
+        public void SeedDatabaseFromExcel(string path, string sheetName, string usersPassword)
+        {
+            var excel = new ExcelQueryFactory(path);
+            var users = from a in excel.Worksheet<ApplicationUser>(sheetName) select a;
+            foreach (var user in users)
+            {
+                var newUser = new ApplicationUser { UserName = user.UserName, Email = user.Email };
+                var adminResult = this.Create(newUser, usersPassword);
+                if (!adminResult.Succeeded)
+                {
+                    // throw an exception or log the user
+                }
             }
         }
 

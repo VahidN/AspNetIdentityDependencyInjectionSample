@@ -25,7 +25,9 @@ namespace AspNetIdentityDependencyInjectionSample
                       .HybridHttpOrThreadLocalScoped()
                       .Use(()=> app.GetDataProtectionProvider());
             });
-            SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+
+            // SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+            SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabaseFromExcel(@"C:\Users.xlsx", "sheet1", "Admin@123456");
 
             // Configure the db context, user manager and role manager to use a single instance per request
             //app.CreatePerOwinContext(() => SmObjectFactory.Container.GetInstance<IApplicationUserManager>());
