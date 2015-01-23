@@ -58,7 +58,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             return SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser, int>(
                          validateInterval: TimeSpan.FromMinutes(30),
                          regenerateIdentityCallback: (manager, user) => generateUserIdentityAsync(manager, user),
-                         getUserIdCallback: (id) => (Int32.Parse(id.GetUserId())));
+                         getUserIdCallback: id => id.GetUserId<int>());
         }
 
         public void SeedDatabase()
