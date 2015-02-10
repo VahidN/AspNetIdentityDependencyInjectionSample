@@ -25,7 +25,9 @@ namespace AspNetIdentityDependencyInjectionSample
                       .HybridHttpOrThreadLocalScoped()
                       .Use(()=> app.GetDataProtectionProvider());
             });
-            SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+
+             SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+            // SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabaseFromExcel(@"C:\Users.xlsx", "sheet1", "Admin@123456");
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider

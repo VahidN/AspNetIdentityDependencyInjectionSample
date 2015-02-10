@@ -562,5 +562,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         Task<bool> HasPassword(int userId);
         Task<bool> HasPhoneNumber(int userId);
         void SeedDatabase();
+        void SeedDatabaseFromExcel(string path, string sheetName, string usersPassword);
     }
 }

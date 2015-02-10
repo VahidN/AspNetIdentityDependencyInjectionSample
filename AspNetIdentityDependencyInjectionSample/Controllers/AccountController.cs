@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
@@ -234,10 +235,11 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName};
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddClaimAsync(user.Id, new Claim(ClaimTypes.GivenName, model.FullName));
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account",
                         new { userId = user.Id, code }, protocol: Request.Url.Scheme);
