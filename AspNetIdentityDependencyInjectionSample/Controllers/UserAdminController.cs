@@ -147,7 +147,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem()
+                RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem
                 {
                     Selected = userRoles.Contains(x.Name),
                     Text = x.Name,
@@ -202,6 +202,12 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         public async Task<ActionResult> Index()
         {
             return View(await _userManager.Users.ToListAsync());
+        }
+
+
+        public ActionResult AdminUsers()
+        {
+            return View(_roleManager.GetApplicationUsersInRole("Admin"));
         }
     }
 }

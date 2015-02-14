@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
@@ -65,5 +66,10 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
 
         CustomRole FindRoleByName(string roleName);
         IdentityResult CreateRole(CustomRole role);
+        IList<CustomUserRole> GetCustomUsersInRole(string roleName);
+        IList<ApplicationUser> GetApplicationUsersInRole(string roleName);
+        IList<CustomRole> FindUserRoles(int userId);
+        string[] GetRolesForUser(int userId);
+        bool IsUserInRole(int userId, string roleName);
     }
 }

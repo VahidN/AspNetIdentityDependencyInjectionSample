@@ -233,6 +233,7 @@
     <Content Include="Views\Products\Create.cshtml" />
     <Content Include="Views\Products\CreateCategory.cshtml" />
     <Content Include="Views\Manage\RemoveLogin.cshtml" />
+    <Content Include="Views\UsersAdmin\AdminUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
