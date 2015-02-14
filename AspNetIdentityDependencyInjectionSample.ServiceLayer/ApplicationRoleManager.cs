@@ -41,21 +41,22 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 
         public IList<ApplicationUser> GetApplicationUsersInRole(string roleName)
         {
-            var selectedUserIds = from role in this.Roles
+            var roleUserIdsQuery = from role in this.Roles
                                   where role.Name == roleName
                                   from user in role.Users
                                   select user.UserId;
-            return _users.Where(applicationUser => selectedUserIds.Contains(applicationUser.Id)).ToList();
+            return _users.Where(applicationUser => roleUserIdsQuery.Contains(applicationUser.Id))
+                         .ToList();
         }
 
         public IList<CustomRole> FindUserRoles(int userId)
         {
-            var query = from role in this.Roles
+            var userRolesQuery = from role in this.Roles
                         from user in role.Users
                         where user.UserId == userId
                         select role;
 
-            return query.OrderBy(x => x.Name).ToList();
+            return userRolesQuery.OrderBy(x => x.Name).ToList();
         }
 
         public string[] GetRolesForUser(int userId)
@@ -71,12 +72,12 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 
         public bool IsUserInRole(int userId, string roleName)
         {
-            var query = from role in this.Roles
+            var userRolesQuery = from role in this.Roles
                         where role.Name == roleName
                         from user in role.Users
                         where user.UserId == userId
                         select role;
-            var userRole = query.FirstOrDefault();
+            var userRole = userRolesQuery.FirstOrDefault();
             return userRole != null;
         }
     }
