@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
@@ -112,19 +111,9 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         bool SupportsQueryableUsers { get; }
 
         /// <summary>
-        /// Returns an IQueryable of users if the store is an IQueryableUserStore
-        /// </summary>
-        IQueryable<ApplicationUser> Users { get; }
-
-        /// <summary>
         /// Maps the registered two-factor authentication providers for users by their id
         /// </summary>
         IDictionary<string, IUserTokenProvider<ApplicationUser, int>> TwoFactorProviders { get; }
-
-        /// <summary>
-        /// Dispose this object
-        /// </summary>
-        void Dispose();
 
         /// <summary>
         /// Creates a ClaimsIdentity representing the user
@@ -562,5 +551,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         Task<bool> HasPassword(int userId);
         Task<bool> HasPhoneNumber(int userId);
         void SeedDatabase();
+        Task<List<ApplicationUser>> GetAllUsersAsync();
     }
 }

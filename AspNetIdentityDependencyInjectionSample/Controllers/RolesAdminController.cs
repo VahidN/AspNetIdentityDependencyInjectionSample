@@ -114,7 +114,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var users = new List<ApplicationUser>();
 
             // Get the list of Users in this Role
-            foreach (var user in _userManager.Users.ToList())
+            var allUsers = await _userManager.GetAllUsersAsync();
+            foreach (var user in allUsers)
             {
                 if (await _userManager.IsInRoleAsync(user.Id, role.Name))
                 {
@@ -162,9 +163,9 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
 
         //
         // GET: /Roles/
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(_roleManager.Roles.ToList());
+            return View(await _roleManager.GetAllCustomRolesAsync());
         }
     }
 }

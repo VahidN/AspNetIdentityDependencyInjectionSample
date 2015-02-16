@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -26,7 +25,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         public async Task<ActionResult> Create()
         {
             //Get the list of Roles
-            ViewBag.RoleId = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
             return View();
         }
 
@@ -49,7 +48,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                         if (!result.Succeeded)
                         {
                             ModelState.AddModelError("", result.Errors.First());
-                            ViewBag.RoleId = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+                            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
                             return View();
                         }
                     }
@@ -57,13 +56,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 else
                 {
                     ModelState.AddModelError("", adminresult.Errors.First());
-                    ViewBag.RoleId = new SelectList(_roleManager.Roles, "Name", "Name");
+                    ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
                     return View();
 
                 }
                 return RedirectToAction("Index");
             }
-            ViewBag.RoleId = new SelectList(_roleManager.Roles, "Name", "Name");
+            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
             return View();
         }
 
@@ -147,7 +146,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem
+                RolesList = (await _roleManager.GetAllCustomRolesAsync()).Select(x => new SelectListItem
                 {
                     Selected = userRoles.Contains(x.Name),
                     Text = x.Name,
@@ -201,7 +200,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // GET: /Users/
         public async Task<ActionResult> Index()
         {
-            return View(await _userManager.Users.ToListAsync());
+            return View(await _userManager.GetAllUsersAsync());
         }
 
 

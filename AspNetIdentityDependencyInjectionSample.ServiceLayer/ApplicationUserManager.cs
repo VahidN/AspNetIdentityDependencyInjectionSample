@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
@@ -140,6 +142,11 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             var userIdentity = await manager.CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
             return userIdentity;
+        }
+
+        public Task<List<ApplicationUser>> GetAllUsersAsync()
+        {
+            return this.Users.ToListAsync();
         }
     }
 }

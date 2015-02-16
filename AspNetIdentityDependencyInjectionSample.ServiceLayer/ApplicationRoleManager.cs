@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
@@ -79,6 +80,11 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
                         select role;
             var userRole = userRolesQuery.FirstOrDefault();
             return userRole != null;
+        }
+
+        public Task<List<CustomRole>> GetAllCustomRolesAsync()
+        {
+            return this.Roles.ToListAsync();
         }
     }
 }

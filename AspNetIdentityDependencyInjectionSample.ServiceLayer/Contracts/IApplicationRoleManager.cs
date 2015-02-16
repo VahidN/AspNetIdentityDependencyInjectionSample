@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using Microsoft.AspNet.Identity;
@@ -13,11 +12,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         /// Used to validate roles before persisting changes
         /// </summary>
         IIdentityValidator<CustomRole> RoleValidator { get; set; }
-
-        /// <summary>
-        /// Returns an IQueryable of roles if the store is an IQueryableRoleStore
-        /// </summary>
-        IQueryable<CustomRole> Roles { get; }
 
         /// <summary>
         /// Create a role
@@ -71,5 +65,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         IList<CustomRole> FindUserRoles(int userId);
         string[] GetRolesForUser(int userId);
         bool IsUserInRole(int userId, string roleName);
+        Task<List<CustomRole>> GetAllCustomRolesAsync();
     }
 }
