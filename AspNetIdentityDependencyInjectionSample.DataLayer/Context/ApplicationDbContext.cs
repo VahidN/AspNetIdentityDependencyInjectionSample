@@ -14,10 +14,22 @@ namespace AspNetIdentityDependencyInjectionSample.DataLayer.Context
         public DbSet<Product> Products { set; get; }
         public DbSet<Address> Addresses { set; get; }
 
+        /// <summary>
+        /// It looks for a connection string named connectionString1 in the web.config file.
+        /// </summary>
         public ApplicationDbContext()
             : base("connectionString1")
         {
             //this.Database.Log = data => System.Diagnostics.Debug.WriteLine(data);
+        }
+
+        /// <summary>
+        /// To change the connection string at runtime. See the SmObjectFactory class for more info.
+        /// </summary>
+        public ApplicationDbContext(string connectionString)
+            : base(connectionString)
+        {
+            //Note: defaultConnectionFactory in the web.config file should be set.
         }
 
         protected override void OnModelCreating(DbModelBuilder builder)
