@@ -19,14 +19,14 @@ namespace AspNetIdentityDependencyInjectionSample
 
         private static void configureAuth(IAppBuilder app)
         {
-            SmObjectFactory.Container.Configure(config =>
+            NewObjectFactory.Container.Configure(config =>
             {
                 config.For<IDataProtectionProvider>()
                       .HybridHttpOrThreadLocalScoped()
                       .Use(()=> app.GetDataProtectionProvider());
             });
 
-             SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+            NewObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
             // SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabaseFromExcel(@"C:\Users.xlsx", "sheet1", "Admin@123456");
 
             // Configure the db context, user manager and role manager to use a single instance per request
@@ -43,7 +43,7 @@ namespace AspNetIdentityDependencyInjectionSample
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.
-                    OnValidateIdentity = SmObjectFactory.Container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
+                    OnValidateIdentity = NewObjectFactory.Container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
                 }
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);

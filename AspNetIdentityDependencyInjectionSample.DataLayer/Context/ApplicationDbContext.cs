@@ -60,5 +60,10 @@ namespace AspNetIdentityDependencyInjectionSample.DataLayer.Context
         {
             this.Database.Initialize(force: true);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
     }
 }
