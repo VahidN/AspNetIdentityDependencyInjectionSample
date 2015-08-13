@@ -18,7 +18,9 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
 
         private readonly IAuthenticationManager _authenticationManager;
         private readonly IApplicationUserManager _userManager;
-        public ManageController(IApplicationUserManager userManager, IAuthenticationManager authenticationManager)
+        public ManageController(
+            IApplicationUserManager userManager,
+            IAuthenticationManager authenticationManager)
         {
             _userManager = userManager;
             _authenticationManager = authenticationManager;
@@ -42,7 +44,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 return View(model);
             }
             // Generate the token and send it
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), model.Number);
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(_userManager.GetCurrentUserId(), model.Number);
             if (_userManager.SmsService != null)
             {
                 var message = new IdentityMessage
@@ -72,10 +74,10 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return View(model);
             }
-            var result = await _userManager.ChangePasswordAsync(User.Identity.GetUserId<int>(), model.OldPassword, model.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(_userManager.GetCurrentUserId(), model.OldPassword, model.NewPassword);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+                var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
                     await signInAsync(user, isPersistent: false);
@@ -91,8 +93,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         [HttpPost]
         public async Task<ActionResult> DisableTFA()
         {
-            await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), false);
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+            await _userManager.SetTwoFactorEnabledAsync(_userManager.GetCurrentUserId(), false);
+            var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
                 await signInAsync(user, isPersistent: false);
@@ -105,8 +107,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         [HttpPost]
         public async Task<ActionResult> EnableTFA()
         {
-            await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), true);
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+            await _userManager.SetTwoFactorEnabledAsync(_userManager.GetCurrentUserId(), true);
+            var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
                 await signInAsync(user, isPersistent: false);
@@ -136,7 +138,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var userId = User.Identity.GetUserId<int>();
+            var userId = _userManager.GetCurrentUserId();
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPassword(userId),
@@ -167,7 +169,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
             }
-            var result = await _userManager.AddLoginAsync(User.Identity.GetUserId<int>(), loginInfo.Login);
+            var result = await _userManager.AddLoginAsync(_userManager.GetCurrentUserId(), loginInfo.Login);
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
@@ -179,12 +181,12 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : "";
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
             {
                 return View("Error");
             }
-            var userLogins = await _userManager.GetLoginsAsync(User.Identity.GetUserId<int>());
+            var userLogins = await _userManager.GetLoginsAsync(_userManager.GetCurrentUserId());
             var otherLogins = _authenticationManager.GetExternalAuthenticationTypes().Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
             ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
@@ -208,7 +210,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // GET: /Account/RemoveLogin
         public async Task<ActionResult> RemoveLogin()
         {
-            var userId = User.Identity.GetUserId<int>();
+            var userId = _userManager.GetCurrentUserId();
             var linkedAccounts = await _userManager.GetLoginsAsync(userId);
             ViewBag.ShowRemoveButton = await _userManager.HasPassword(userId) || linkedAccounts.Count > 1;
             return View(linkedAccounts);
@@ -221,10 +223,10 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         public async Task<ActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message;
-            var result = await _userManager.RemoveLoginAsync(User.Identity.GetUserId<int>(), new UserLoginInfo(loginProvider, providerKey));
+            var result = await _userManager.RemoveLoginAsync(_userManager.GetCurrentUserId(), new UserLoginInfo(loginProvider, providerKey));
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+                var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
                     await signInAsync(user, isPersistent: false);
@@ -241,12 +243,12 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // GET: /Account/RemovePhoneNumber
         public async Task<ActionResult> RemovePhoneNumber()
         {
-            var result = await _userManager.SetPhoneNumberAsync(User.Identity.GetUserId<int>(), null);
+            var result = await _userManager.SetPhoneNumberAsync(_userManager.GetCurrentUserId(), null);
             if (!result.Succeeded)
             {
                 return RedirectToAction("Index", new { Message = ManageMessageId.Error });
             }
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+            var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
                 await signInAsync(user, isPersistent: false);
@@ -269,10 +271,10 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userManager.AddPasswordAsync(User.Identity.GetUserId<int>(), model.NewPassword);
+                var result = await _userManager.AddPasswordAsync(_userManager.GetCurrentUserId(), model.NewPassword);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+                    var user = await _userManager.GetCurrentUserAsync();
                     if (user != null)
                     {
                         await signInAsync(user, isPersistent: false);
@@ -292,7 +294,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             // This code allows you exercise the flow without actually sending codes
             // For production use please register a SMS provider in IdentityConfig and generate a code here.
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), phoneNumber);
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(_userManager.GetCurrentUserId(), phoneNumber);
             ViewBag.Status = "For DEMO purposes only, the current code is " + code;
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -307,10 +309,10 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return View(model);
             }
-            var result = await _userManager.ChangePhoneNumberAsync(User.Identity.GetUserId<int>(), model.PhoneNumber, model.Code);
+            var result = await _userManager.ChangePhoneNumberAsync(_userManager.GetCurrentUserId(), model.PhoneNumber, model.Code);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+                var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
                     await signInAsync(user, isPersistent: false);

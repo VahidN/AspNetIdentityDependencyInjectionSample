@@ -552,5 +552,9 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         Task<bool> HasPhoneNumber(int userId);
         void SeedDatabase();
         Task<List<ApplicationUser>> GetAllUsersAsync();
+        ApplicationUser FindById(int userId);
+        ApplicationUser GetCurrentUser();
+        Task<ApplicationUser> GetCurrentUserAsync();
+        int GetCurrentUserId();
     }
 }

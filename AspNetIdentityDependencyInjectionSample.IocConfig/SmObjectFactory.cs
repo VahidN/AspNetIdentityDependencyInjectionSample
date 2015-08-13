@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Security.Principal;
 using System.Threading;
 using System.Web;
 using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
@@ -28,6 +29,8 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
         {
             return new Container(ioc =>
             {
+                ioc.For<IIdentity>().Use(() => HttpContext.Current.User != null ? (HttpContext.Current != null ? HttpContext.Current.User.Identity : null) : null);
+
                 ioc.For<IUnitOfWork>()
                     .HybridHttpOrThreadLocalScoped()
                     .Use<ApplicationDbContext>();
