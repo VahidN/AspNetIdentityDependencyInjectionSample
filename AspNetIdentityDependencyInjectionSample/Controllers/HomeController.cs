@@ -1,9 +1,17 @@
 ﻿using System.Web.Mvc;
+using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 
 namespace AspNetIdentityDependencyInjectionSample.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IApplicationUserManager _userManager;
+        public HomeController(IApplicationUserManager userManager)
+        {
+            _userManager = userManager;
+        }
+
+
         public ActionResult Index()
         {
             return View();
@@ -22,6 +30,11 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        public ActionResult GetData()
+        {
+            return Content(_userManager.GetCurrentUser().UserName);
         }
     }
 }
