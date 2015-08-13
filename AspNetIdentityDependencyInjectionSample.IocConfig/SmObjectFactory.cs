@@ -29,11 +29,11 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
             return new Container(ioc =>
             {
                 ioc.For<IUnitOfWork>()
-                   .HybridHttpOrThreadLocalScoped()
-                   .Use<ApplicationDbContext>()
-                   // Remove these 2 lines if you want to use a connection string named connectionString1, defined in the web.config file.
-                   .Ctor<string>("connectionString")
-                   .Is("Data Source=(local);Initial Catalog=TestDbIdentity;Integrated Security = true");
+                    .HybridHttpOrThreadLocalScoped()
+                    .Use<ApplicationDbContext>();
+                    // Remove these 2 lines if you want to use a connection string named connectionString1, defined in the web.config file.
+                   //.Ctor<string>("connectionString")
+                   //.Is("Data Source=(local);Initial Catalog=TestDbIdentity;Integrated Security = true");
 
                 ioc.For<ApplicationDbContext>().HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());
@@ -42,7 +42,7 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
 
                 ioc.For<IUserStore<ApplicationUser, int>>()
                     .HybridHttpOrThreadLocalScoped()
-                    .Use<UserStore<ApplicationUser, CustomRole, int, CustomUserLogin, CustomUserRole, CustomUserClaim>>();
+                    .Use<CustomUserStore>();
 
                 ioc.For<IRoleStore<CustomRole, int>>()
                     .HybridHttpOrThreadLocalScoped()

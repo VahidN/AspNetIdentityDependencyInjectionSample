@@ -23,7 +23,7 @@ namespace AspNetIdentityDependencyInjectionSample
             {
                 config.For<IDataProtectionProvider>()
                       .HybridHttpOrThreadLocalScoped()
-                      .Use(()=> app.GetDataProtectionProvider());
+                      .Use(() => app.GetDataProtectionProvider());
             });
             SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
 
@@ -51,6 +51,9 @@ namespace AspNetIdentityDependencyInjectionSample
             // This is similar to the RememberMe option when you log in.
             app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
+            app.CreatePerOwinContext(
+               () => SmObjectFactory.Container.GetInstance<IApplicationUserManager>());
+
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
             //    clientId: "",
@@ -68,6 +71,5 @@ namespace AspNetIdentityDependencyInjectionSample
             //    clientId: "",
             //    clientSecret: "");
         }
-
     }
 }

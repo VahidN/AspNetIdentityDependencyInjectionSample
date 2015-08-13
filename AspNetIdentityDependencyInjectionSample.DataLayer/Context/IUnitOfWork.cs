@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 
 namespace AspNetIdentityDependencyInjectionSample.DataLayer.Context
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IDbSet<TEntity> Set<TEntity>() where TEntity : class;
         int SaveAllChanges();

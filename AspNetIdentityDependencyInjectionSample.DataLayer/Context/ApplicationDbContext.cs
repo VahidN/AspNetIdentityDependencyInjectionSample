@@ -26,11 +26,11 @@ namespace AspNetIdentityDependencyInjectionSample.DataLayer.Context
         /// <summary>
         /// To change the connection string at runtime. See the SmObjectFactory class for more info.
         /// </summary>
-        public ApplicationDbContext(string connectionString)
-            : base(connectionString)
-        {
-            //Note: defaultConnectionFactory in the web.config file should be set.
-        }
+        //public ApplicationDbContext(string connectionString)
+        //    : base(connectionString)
+        //{
+        //    //Note: defaultConnectionFactory in the web.config file should be set.
+        //}
 
         protected override void OnModelCreating(DbModelBuilder builder)
         {

@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Web API Test, Please wait for the alert...</h2>
+@section scripts
+{
+    <script>
+        $(function() {
+            $.getJSON('/api/AccountApiTest/1?timestamp=' + new Date().getTime(), function(data) {
+                alert("userName[1]: " + data.userName);
+            });
+            $.getJSON('/api/AccountApiTest/4?timestamp=' + new Date().getTime(), function (data) {
+                alert("userName[4]: " + data.userName);
+            });
+        });
+    </script>
+}
