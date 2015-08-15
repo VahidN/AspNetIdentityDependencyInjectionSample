@@ -70,6 +70,8 @@ namespace AspNetIdentityDependencyInjectionSample
             //app.UseGoogleAuthentication(
             //    clientId: "",
             //    clientSecret: "");
+
+            app.MapSignalR();
         }
     }
 }

@@ -29,14 +29,16 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
         {
             return new Container(ioc =>
             {
-                ioc.For<IIdentity>().Use(() => HttpContext.Current.User != null ? (HttpContext.Current != null ? HttpContext.Current.User.Identity : null) : null);
+                ioc.For<Microsoft.AspNet.SignalR.IDependencyResolver>().Singleton().Add<StructureMapSignalRDependencyResolver>();
+
+                ioc.For<IIdentity>().Use(() => (HttpContext.Current != null && HttpContext.Current.User != null) ? HttpContext.Current.User.Identity : null);
 
                 ioc.For<IUnitOfWork>()
                     .HybridHttpOrThreadLocalScoped()
                     .Use<ApplicationDbContext>();
-                    // Remove these 2 lines if you want to use a connection string named connectionString1, defined in the web.config file.
-                   //.Ctor<string>("connectionString")
-                   //.Is("Data Source=(local);Initial Catalog=TestDbIdentity;Integrated Security = true");
+                // Remove these 2 lines if you want to use a connection string named connectionString1, defined in the web.config file.
+                //.Ctor<string>("connectionString")
+                //.Is("Data Source=(local);Initial Catalog=TestDbIdentity;Integrated Security = true");
 
                 ioc.For<ApplicationDbContext>().HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());

@@ -26,6 +26,7 @@ namespace AspNetIdentityDependencyInjectionSample
             setDbInitializer();
             //Set current Controller factory as StructureMapControllerFactory
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
+            Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver = SmObjectFactory.Container.GetInstance<Microsoft.AspNet.SignalR.IDependencyResolver>();
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)

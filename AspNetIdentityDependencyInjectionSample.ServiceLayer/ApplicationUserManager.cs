@@ -18,12 +18,11 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         : UserManager<ApplicationUser, int>, IApplicationUserManager
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IIdentity _identity;
         private readonly IApplicationRoleManager _roleManager;
         private readonly IUserStore<ApplicationUser, int> _store;
         private readonly IUnitOfWork _uow;
         private readonly IDbSet<ApplicationUser> _users;
-
+        private readonly IIdentity _identity;
         private ApplicationUser _user;
 
         public ApplicationUserManager(IUserStore<ApplicationUser, int> store,

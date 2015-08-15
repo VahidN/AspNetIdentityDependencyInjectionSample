@@ -3,9 +3,9 @@
 namespace AspNetIdentityDependencyInjectionSample.Controllers
 {
     [Authorize]
-    public class WebApiTestController : Controller
+    public class SignalRTestController : Controller
     {
-        // GET: WebApiTest
+        // GET: SignalRTest
         public ActionResult Index()
         {
             return View();

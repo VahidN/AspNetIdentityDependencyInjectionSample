@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using Microsoft.AspNet.Identity;

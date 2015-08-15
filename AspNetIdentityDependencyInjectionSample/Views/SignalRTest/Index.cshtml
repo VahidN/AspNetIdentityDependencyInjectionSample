@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>SignalR Test</h2>
+<div>
+    <ul id="messages"></ul>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js" type="text/javascript"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var chat;
+            $.connection.hub.url = '/signalr';
+            $.connection.hub.logging = true;
+            chat = $.connection.chat;
+            chat.client.hello = function (message) {
+                $("#messages").append("<li>" + message + "</li>");
+            };
+            $.connection.hub.start();
+        });
+    </script>
+}
