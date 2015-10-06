@@ -16,13 +16,13 @@ namespace AspNetIdentityDependencyInjectionSample.Hubs
 
         public void Hello()
         {
-            Clients.All.hello(string.Format("Helo from: {0}", _userManager.GetCurrentUser().UserName));
+            Clients.All.hello(string.Format("Hello from: {0}", _userManager.GetCurrentUser().UserName));
         }
 
         public override System.Threading.Tasks.Task OnConnected()
         {
             var user = _userManager.GetCurrentUser();
-            var msg = string.Format("Helo from: {0}", user.UserName);
+            var msg = string.Format("Hello from: {0}", user.UserName);
             Clients.Client(Context.ConnectionId).hello(msg);
             return base.OnConnected();
         }

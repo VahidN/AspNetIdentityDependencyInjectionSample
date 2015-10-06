@@ -10,6 +10,7 @@ using StructureMap.Web;
 
 namespace AspNetIdentityDependencyInjectionSample
 {
+    //[assembly: OwinStartupAttribute(typeof(AspNetIdentityDependencyInjectionSample.Startup))]
     public class Startup
     {
         public void Configuration(IAppBuilder app)
