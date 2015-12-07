@@ -94,7 +94,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         public Func<CookieValidateIdentityContext, Task> OnValidateIdentity()
         {
             return SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser, int>(
-                         validateInterval: TimeSpan.FromMinutes(30),
+                         validateInterval: TimeSpan.FromMinutes(5),
                          regenerateIdentityCallback: (manager, user) => generateUserIdentityAsync(manager, user),
                          getUserIdCallback: id => id.GetUserId<int>());
         }

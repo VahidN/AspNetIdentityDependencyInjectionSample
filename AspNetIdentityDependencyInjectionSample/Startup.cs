@@ -35,6 +35,8 @@ namespace AspNetIdentityDependencyInjectionSample
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
+                CookieName = "my-very-own-cookie-name",
+                ExpireTimeSpan = TimeSpan.FromDays(30),
                 Provider = new CookieAuthenticationProvider
                 {
                     // Enables the application to validate the security stamp when the user logs in.

@@ -211,9 +211,12 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        public async Task<ActionResult> LogOff()
         {
-            _authenticationManager.SignOut();
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            _authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            await _userManager.UpdateSecurityStampAsync(user.Id);
+
             return RedirectToAction("Index", "Home");
         }
 
