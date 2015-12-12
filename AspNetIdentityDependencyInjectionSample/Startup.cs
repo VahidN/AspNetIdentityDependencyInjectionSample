@@ -20,6 +20,8 @@ namespace AspNetIdentityDependencyInjectionSample
 
         private static void configureAuth(IAppBuilder app)
         {
+            app.CreatePerOwinContext(
+               () => SmObjectFactory.Container.GetInstance<IApplicationUserManager>());						
             SmObjectFactory.Container.Configure(config =>
             {
                 config.For<IDataProtectionProvider>()
@@ -53,9 +55,6 @@ namespace AspNetIdentityDependencyInjectionSample
             // Once you check this option, your second step of verification during the login process will be remembered on the device where you logged in from.
             // This is similar to the RememberMe option when you log in.
             app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
-
-            app.CreatePerOwinContext(
-               () => SmObjectFactory.Container.GetInstance<IApplicationUserManager>());
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
