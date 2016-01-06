@@ -10,7 +10,6 @@ using AspNetIdentityDependencyInjectionSample.ServiceLayer;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using StructureMap;
 using StructureMap.Web;
@@ -74,8 +73,8 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                    .Use<ApplicationUserManager>()
                    .Ctor<IIdentityMessageService>("smsService").Is<SmsService>()
                    .Ctor<IIdentityMessageService>("emailService").Is<EmailService>()
-                   .Setter<IIdentityMessageService>(userManager => userManager.SmsService).Is<SmsService>()
-                   .Setter<IIdentityMessageService>(userManager => userManager.EmailService).Is<EmailService>();
+                   .Setter(userManager => userManager.SmsService).Is<SmsService>()
+                   .Setter(userManager => userManager.EmailService).Is<EmailService>();
 
                 ioc.For<ApplicationUserManager>().HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationUserManager)context.GetInstance<IApplicationUserManager>());
