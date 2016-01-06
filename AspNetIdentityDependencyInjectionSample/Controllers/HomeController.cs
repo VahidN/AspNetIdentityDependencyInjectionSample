@@ -34,7 +34,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
 
         public ActionResult GetData()
         {
-            return Content(_userManager.GetCurrentUser().UserName);
+            var applicationUser = _userManager.GetCurrentUser();
+            return Content(applicationUser.UserName);
         }
     }
 }

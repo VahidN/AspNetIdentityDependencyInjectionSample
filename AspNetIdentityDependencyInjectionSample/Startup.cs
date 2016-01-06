@@ -20,8 +20,6 @@ namespace AspNetIdentityDependencyInjectionSample
 
         private static void configureAuth(IAppBuilder app)
         {
-            app.CreatePerOwinContext(
-               () => SmObjectFactory.Container.GetInstance<IApplicationUserManager>());						
             SmObjectFactory.Container.Configure(config =>
             {
                 config.For<IDataProtectionProvider>()

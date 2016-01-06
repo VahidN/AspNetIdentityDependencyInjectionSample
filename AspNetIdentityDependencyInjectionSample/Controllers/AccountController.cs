@@ -193,6 +193,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             // This doesn't count login failures towards lockout only two factor authentication
             // To enable password failures to trigger lockout, change to shouldLockout: true
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+
+            /*var userName = User.Identity.GetUserName();
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+
+            }*/
+
             switch (result)
             {
                 case SignInStatus.Success:

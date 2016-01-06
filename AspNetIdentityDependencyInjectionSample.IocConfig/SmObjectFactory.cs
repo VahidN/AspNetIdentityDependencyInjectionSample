@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Web;
@@ -9,6 +10,7 @@ using AspNetIdentityDependencyInjectionSample.ServiceLayer;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using StructureMap;
 using StructureMap.Web;
@@ -31,7 +33,7 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
             {
                 ioc.For<Microsoft.AspNet.SignalR.IDependencyResolver>().Singleton().Add<StructureMapSignalRDependencyResolver>();
 
-                ioc.For<IIdentity>().Use(() => (HttpContext.Current != null && HttpContext.Current.User != null) ? HttpContext.Current.User.Identity : null);
+                ioc.For<IIdentity>().Use(() => getIdentity());
 
                 ioc.For<IUnitOfWork>()
                     .HybridHttpOrThreadLocalScoped()
@@ -91,6 +93,16 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                 ioc.For<ICategoryService>().Use<EfCategoryService>();
                 ioc.For<IProductService>().Use<EfProductService>();
             });
+        }
+
+        private static IIdentity getIdentity()
+        {
+            if (HttpContext.Current != null && HttpContext.Current.User != null)
+            {
+                return HttpContext.Current.User.Identity;
+            }
+
+            return ClaimsPrincipal.Current != null ? ClaimsPrincipal.Current.Identity : null;
         }
     }
 }
