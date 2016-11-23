@@ -172,7 +172,8 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             }
         }
 
-        private async Task<ClaimsIdentity> generateUserIdentityAsync(ApplicationUserManager manager, ApplicationUser applicationUser)
+        private async Task<ClaimsIdentity> generateUserIdentityAsync(
+            ApplicationUserManager manager, ApplicationUser applicationUser)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie);

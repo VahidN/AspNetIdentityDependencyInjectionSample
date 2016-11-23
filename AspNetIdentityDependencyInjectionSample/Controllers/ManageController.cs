@@ -74,6 +74,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return View(model);
             }
+
             var result = await _userManager.ChangePasswordAsync(_userManager.GetCurrentUserId(), model.OldPassword, model.NewPassword);
             if (result.Succeeded)
             {
@@ -334,6 +335,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         private async Task signInAsync(ApplicationUser user, bool isPersistent)
         {
             _authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
+            await _userManager.UpdateSecurityStampAsync(user.Id);
             _authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent },
                 await _userManager.GenerateUserIdentityAsync(user));
         }

@@ -100,12 +100,14 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 {
                     return HttpNotFound();
                 }
+
                 var result = await _userManager.DeleteAsync(user);
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
+
                 return RedirectToAction("Index");
             }
             return View();
@@ -183,6 +185,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
+                await _userManager.UpdateSecurityStampAsync(user.Id);
+
                 result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray());
 
                 if (!result.Succeeded)
@@ -190,6 +194,8 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
+                await _userManager.UpdateSecurityStampAsync(user.Id);
+
                 return RedirectToAction("Index");
             }
             ModelState.AddModelError("", "Something failed.");
