@@ -110,22 +110,39 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             if (role == null)
             {
                 role = new CustomRole(roleName);
-                var roleresult = _roleManager.CreateRole(role);
+                var roleResult = _roleManager.CreateRole(role);
+                if(!roleResult.Succeeded)
+                {
+                    throw new InvalidOperationException(string.Join(", ", roleResult.Errors));
+                }
             }
 
             var user = this.FindByName(name);
             if (user == null)
             {
                 user = new ApplicationUser { UserName = name, Email = name };
-                var result = this.Create(user, password);
-                result = this.SetLockoutEnabled(user.Id, false);
+                var createResult = this.Create(user, password);
+                if(!createResult.Succeeded)
+                {
+                    throw new InvalidOperationException(string.Join(", ", createResult.Errors));
+                }
+
+                var setLockoutResult = this.SetLockoutEnabled(user.Id, false);
+                if(!setLockoutResult.Succeeded)
+                {
+                    throw new InvalidOperationException(string.Join(", ", setLockoutResult.Errors));
+                }
             }
 
             // Add user admin to Role Admin if not already added
             var rolesForUser = this.GetRoles(user.Id);
             if (!rolesForUser.Contains(role.Name))
             {
-                var result = this.AddToRole(user.Id, role.Name);
+                var addToRoleResult = this.AddToRole(user.Id, role.Name);
+                if(!addToRoleResult.Succeeded)
+                {
+                    throw new InvalidOperationException(string.Join(", ", addToRoleResult.Errors));
+                }
             }
         }
 
