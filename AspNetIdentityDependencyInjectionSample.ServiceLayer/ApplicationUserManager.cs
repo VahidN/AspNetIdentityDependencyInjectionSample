@@ -55,7 +55,10 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie);
+
             // Add custom user claims here
+            userIdentity.AddClaim(new Claim("user-email", applicationUser.Email));
+
             return userIdentity;
         }
 
