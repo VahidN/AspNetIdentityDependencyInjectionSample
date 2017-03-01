@@ -1,12 +1,14 @@
-﻿using System;
+﻿using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
 using AspNetIdentityDependencyInjectionSample.IocConfig;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
+using AspNetIdentityDependencyInjectionSample.ServiceLayer;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin;
 using Owin;
 using StructureMap.Web;
+using System;
 
 namespace AspNetIdentityDependencyInjectionSample
 {
@@ -27,6 +29,11 @@ namespace AspNetIdentityDependencyInjectionSample
                       .Use(() => app.GetDataProtectionProvider());
             });
             SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+
+            app.CreatePerOwinContext(() => (ApplicationDbContext)SmObjectFactory.Container.GetInstance<IUnitOfWork>());
+            app.CreatePerOwinContext(() => (ApplicationUserManager)SmObjectFactory.Container.GetInstance<IApplicationUserManager>());
+            app.CreatePerOwinContext(() => (ApplicationSignInManager)SmObjectFactory.Container.GetInstance<IApplicationSignInManager>());
+            app.CreatePerOwinContext(() => (ApplicationRoleManager)SmObjectFactory.Container.GetInstance<IApplicationRoleManager>());
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider

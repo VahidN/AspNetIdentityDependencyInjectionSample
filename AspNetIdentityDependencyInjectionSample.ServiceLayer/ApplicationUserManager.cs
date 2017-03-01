@@ -98,7 +98,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         {
             return SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser, int>(
                          validateInterval: TimeSpan.FromSeconds(0),
-                         regenerateIdentityCallback: (manager, user) => generateUserIdentityAsync(manager, user),
+                         regenerateIdentityCallback: (manager, user) => GenerateUserIdentityAsync(user),
                          getUserIdCallback: id => id.GetUserId<int>());
         }
 
@@ -190,15 +190,6 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
                 var dataProtector = _dataProtectionProvider.Create("ASP.NET Identity");
                 this.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser, int>(dataProtector);
             }
-        }
-
-        private async Task<ClaimsIdentity> generateUserIdentityAsync(
-            ApplicationUserManager manager, ApplicationUser applicationUser)
-        {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
-            return userIdentity;
         }
     }
 }
