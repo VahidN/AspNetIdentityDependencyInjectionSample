@@ -15,24 +15,26 @@ using Microsoft.Owin.Security.DataProtection;
 namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 {
     public class ApplicationUserManager
-        : UserManager<ApplicationUser, int>, IApplicationUserManager
+        : UserManager<ApplicationUser, int>,
+        IApplicationUserManager
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IApplicationRoleManager _roleManager;
-        private readonly IUserStore<ApplicationUser, int> _store;
+        private readonly ICustomUserStore _store;
         private readonly IUnitOfWork _uow;
         private readonly IDbSet<ApplicationUser> _users;
-        private readonly IIdentity _identity;
+        private readonly Lazy<Func<IIdentity>> _identity;
         private ApplicationUser _user;
 
-        public ApplicationUserManager(IUserStore<ApplicationUser, int> store,
+        public ApplicationUserManager(
+            ICustomUserStore store,
             IUnitOfWork uow,
-            IIdentity identity,
+            Lazy<Func<IIdentity>> identity, // For lazy loading -> Controller gets constructed before the HttpContext has been set by ASP.NET.
             IApplicationRoleManager roleManager,
             IDataProtectionProvider dataProtectionProvider,
             IIdentityMessageService smsService,
             IIdentityMessageService emailService)
-            : base(store)
+            : base((IUserStore<ApplicationUser, int>)store)
         {
             _store = store;
             _uow = uow;
@@ -79,7 +81,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 
         public int GetCurrentUserId()
         {
-            return _identity.GetUserId<int>();
+            return _identity.Value().GetUserId<int>();
         }
 
         public async Task<bool> HasPassword(int userId)

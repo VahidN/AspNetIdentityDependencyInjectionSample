@@ -1,16 +1,21 @@
-﻿using AspNetIdentityDependencyInjectionSample.DomainClasses;
+﻿using System.Data.Entity;
+using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
+using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
-using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 {
-    public class CustomRoleStore : ICustomRoleStore
+    public class CustomRoleStore :
+        RoleStore<CustomRole, int, CustomUserRole>,
+        ICustomRoleStore
     {
-        private readonly IRoleStore<CustomRole, int> _roleStore;
+        private readonly IUnitOfWork _context;
 
-        public CustomRoleStore(IRoleStore<CustomRole, int> roleStore)
+        public CustomRoleStore(IUnitOfWork context)
+            : base((DbContext)context)
         {
-            _roleStore = roleStore;
+            _context = context;
         }
     }
 }

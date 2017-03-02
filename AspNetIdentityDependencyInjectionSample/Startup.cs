@@ -22,18 +22,19 @@ namespace AspNetIdentityDependencyInjectionSample
 
         private static void configureAuth(IAppBuilder app)
         {
-            SmObjectFactory.Container.Configure(config =>
+            var container = SmObjectFactory.Container;
+            container.Configure(config =>
             {
                 config.For<IDataProtectionProvider>()
                       .HybridHttpOrThreadLocalScoped()
                       .Use(() => app.GetDataProtectionProvider());
             });
-            SmObjectFactory.Container.GetInstance<IApplicationUserManager>().SeedDatabase();
+            container.GetInstance<IApplicationUserManager>().SeedDatabase();
 
-            app.CreatePerOwinContext(() => (ApplicationDbContext)SmObjectFactory.Container.GetInstance<IUnitOfWork>());
-            app.CreatePerOwinContext(() => (ApplicationUserManager)SmObjectFactory.Container.GetInstance<IApplicationUserManager>());
-            app.CreatePerOwinContext(() => (ApplicationSignInManager)SmObjectFactory.Container.GetInstance<IApplicationSignInManager>());
-            app.CreatePerOwinContext(() => (ApplicationRoleManager)SmObjectFactory.Container.GetInstance<IApplicationRoleManager>());
+            app.CreatePerOwinContext(() => (ApplicationDbContext)container.GetInstance<IUnitOfWork>());
+            app.CreatePerOwinContext(() => (ApplicationUserManager)container.GetInstance<IApplicationUserManager>());
+            app.CreatePerOwinContext(() => (ApplicationSignInManager)container.GetInstance<IApplicationSignInManager>());
+            app.CreatePerOwinContext(() => (ApplicationRoleManager)container.GetInstance<IApplicationRoleManager>());
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -48,7 +49,7 @@ namespace AspNetIdentityDependencyInjectionSample
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.
-                    OnValidateIdentity = SmObjectFactory.Container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
+                    OnValidateIdentity = container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
                 },
                 SlidingExpiration = false
             });

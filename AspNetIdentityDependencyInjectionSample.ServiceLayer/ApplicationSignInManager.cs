@@ -6,14 +6,16 @@ using Microsoft.Owin.Security;
 namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 {
     public class ApplicationSignInManager :
-        SignInManager<ApplicationUser, int>, IApplicationSignInManager
+        SignInManager<ApplicationUser, int>,
+        IApplicationSignInManager
     {
-        private readonly ApplicationUserManager _userManager;
+        private readonly IApplicationUserManager _userManager;
         private readonly IAuthenticationManager _authenticationManager;
 
-        public ApplicationSignInManager(ApplicationUserManager userManager,
-                                        IAuthenticationManager authenticationManager) :
-            base(userManager, authenticationManager)
+        public ApplicationSignInManager(
+            IApplicationUserManager userManager,
+            IAuthenticationManager authenticationManager) :
+            base((ApplicationUserManager)userManager, authenticationManager)
         {
             _userManager = userManager;
             _authenticationManager = authenticationManager;

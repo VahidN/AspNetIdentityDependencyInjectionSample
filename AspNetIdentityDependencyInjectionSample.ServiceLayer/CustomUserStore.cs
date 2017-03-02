@@ -1,6 +1,4 @@
-﻿using System.Data.Entity;
-using System.Threading.Tasks;
-using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
+﻿using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
 using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -11,16 +9,13 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         UserStore<ApplicationUser, CustomRole, int, CustomUserLogin, CustomUserRole, CustomUserClaim>,
         ICustomUserStore
     {
-        //private readonly IDbSet<ApplicationUser> _myUserStore;
-        public CustomUserStore(ApplicationDbContext context)
-            : base(context)
+        private readonly IUnitOfWork _context;
+
+        public CustomUserStore(IUnitOfWork context)
+            : base((ApplicationDbContext)context)
         {
-            //_myUserStore = context.Set<ApplicationUser>();
+            _context = context;
         }
 
-        //public override Task<ApplicationUser> FindByIdAsync(int userId)
-        //{
-        //   return Task.FromResult(_myUserStore.Find(userId));
-        //}
     }
 }

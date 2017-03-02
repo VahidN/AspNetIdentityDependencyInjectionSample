@@ -9,13 +9,17 @@ using Microsoft.AspNet.Identity;
 
 namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 {
-    public class ApplicationRoleManager : RoleManager<CustomRole, int>, IApplicationRoleManager
+    public class ApplicationRoleManager :
+        RoleManager<CustomRole, int>,
+        IApplicationRoleManager
     {
         private readonly IUnitOfWork _uow;
-        private readonly IRoleStore<CustomRole, int> _roleStore;
+        private readonly ICustomRoleStore _roleStore;
         private readonly IDbSet<ApplicationUser> _users;
-        public ApplicationRoleManager(IUnitOfWork uow, IRoleStore<CustomRole, int> roleStore)
-            : base(roleStore)
+        public ApplicationRoleManager(
+            IUnitOfWork uow,
+            ICustomRoleStore roleStore)
+            : base((IRoleStore<CustomRole, int>)roleStore)
         {
             _uow = uow;
             _roleStore = roleStore;

@@ -1,18 +1,17 @@
-﻿using System;
+﻿using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
+using AspNetIdentityDependencyInjectionSample.DomainClasses;
+using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
+using AspNetIdentityDependencyInjectionSample.ServiceLayer;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
+using StructureMap.Web;
+using StructureMap;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Web;
-using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
-using AspNetIdentityDependencyInjectionSample.DomainClasses;
-using AspNetIdentityDependencyInjectionSample.ServiceLayer;
-using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using StructureMap;
-using StructureMap.Web;
+using System;
 
 namespace AspNetIdentityDependencyInjectionSample.IocConfig
 {
@@ -30,9 +29,13 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
         {
             return new Container(ioc =>
             {
-                ioc.For<Microsoft.AspNet.SignalR.IDependencyResolver>().Singleton().Add<StructureMapSignalRDependencyResolver>();
+                ioc.For<Microsoft.AspNet.SignalR.IDependencyResolver>()
+                   .Singleton()
+                   .Add<StructureMapSignalRDependencyResolver>();
 
-                ioc.For<IIdentity>().Use(() => getIdentity());
+                ioc.For<IIdentity>()
+                   .HybridHttpOrThreadLocalScoped()
+                   .Use(() => getIdentity());
 
                 ioc.For<IUnitOfWork>()
                     .HybridHttpOrThreadLocalScoped()
@@ -41,9 +44,11 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                 //.Ctor<string>("connectionString")
                 //.Is("Data Source=(local);Initial Catalog=TestDbIdentity;Integrated Security = true");
 
-                ioc.For<ApplicationDbContext>().HybridHttpOrThreadLocalScoped()
+                ioc.For<ApplicationDbContext>()
+                   .HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());
-                ioc.For<DbContext>().HybridHttpOrThreadLocalScoped()
+                ioc.For<DbContext>()
+                   .HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationDbContext)context.GetInstance<IUnitOfWork>());
 
                 ioc.For<IUserStore<ApplicationUser, int>>()
@@ -52,10 +57,11 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
 
                 ioc.For<IRoleStore<CustomRole, int>>()
                     .HybridHttpOrThreadLocalScoped()
-                    .Use<RoleStore<CustomRole, int, CustomUserRole>>();
+                    .Use<CustomRoleStore>();
 
                 ioc.For<IAuthenticationManager>()
-                      .Use(() => HttpContext.Current.GetOwinContext().Authentication);
+                   .HybridHttpOrThreadLocalScoped()
+                   .Use(() => HttpContext.Current.GetOwinContext().Authentication);
 
                 ioc.For<IApplicationSignInManager>()
                       .HybridHttpOrThreadLocalScoped()
@@ -69,14 +75,16 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
                 ioc.For<IIdentityMessageService>().Use<SmsService>();
                 ioc.For<IIdentityMessageService>().Use<EmailService>();
 
-                ioc.For<IApplicationUserManager>().HybridHttpOrThreadLocalScoped()
+                ioc.For<IApplicationUserManager>()
+                   .HybridHttpOrThreadLocalScoped()
                    .Use<ApplicationUserManager>()
                    .Ctor<IIdentityMessageService>("smsService").Is<SmsService>()
                    .Ctor<IIdentityMessageService>("emailService").Is<EmailService>()
                    .Setter(userManager => userManager.SmsService).Is<SmsService>()
                    .Setter(userManager => userManager.EmailService).Is<EmailService>();
 
-                ioc.For<ApplicationUserManager>().HybridHttpOrThreadLocalScoped()
+                ioc.For<ApplicationUserManager>()
+                   .HybridHttpOrThreadLocalScoped()
                    .Use(context => (ApplicationUserManager)context.GetInstance<IApplicationUserManager>());
 
                 ioc.For<ICustomRoleStore>()
@@ -89,8 +97,12 @@ namespace AspNetIdentityDependencyInjectionSample.IocConfig
 
                 //config.For<IDataProtectionProvider>().Use(()=> app.GetDataProtectionProvider()); // In Startup class
 
-                ioc.For<ICategoryService>().Use<EfCategoryService>();
-                ioc.For<IProductService>().Use<EfProductService>();
+                ioc.For<ICategoryService>()
+                   .HybridHttpOrThreadLocalScoped()
+                   .Use<EfCategoryService>();
+                ioc.For<IProductService>()
+                   .HybridHttpOrThreadLocalScoped()
+                   .Use<EfProductService>();
             });
         }
 
