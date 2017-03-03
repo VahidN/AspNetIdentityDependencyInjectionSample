@@ -81,7 +81,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
-                    await signInAsync(user, isPersistent: false);
+                    await refreshSignInAsync(user, isPersistent: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
@@ -98,7 +98,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
-                await signInAsync(user, isPersistent: false);
+                await refreshSignInAsync(user, isPersistent: false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -112,7 +112,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
-                await signInAsync(user, isPersistent: false);
+                await refreshSignInAsync(user, isPersistent: false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -230,7 +230,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
-                    await signInAsync(user, isPersistent: false);
+                    await refreshSignInAsync(user, isPersistent: false);
                 }
                 message = ManageMessageId.RemoveLoginSuccess;
             }
@@ -252,7 +252,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync();
             if (user != null)
             {
-                await signInAsync(user, isPersistent: false);
+                await refreshSignInAsync(user, isPersistent: false);
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
@@ -278,7 +278,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                     var user = await _userManager.GetCurrentUserAsync();
                     if (user != null)
                     {
-                        await signInAsync(user, isPersistent: false);
+                        await refreshSignInAsync(user, isPersistent: false);
                     }
                     return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
                 }
@@ -316,7 +316,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync();
                 if (user != null)
                 {
-                    await signInAsync(user, isPersistent: false);
+                    await refreshSignInAsync(user, isPersistent: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
             }
@@ -332,12 +332,15 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             }
         }
 
-        private async Task signInAsync(ApplicationUser user, bool isPersistent)
+        /// <summary>
+        /// How to refresh authentication cookies
+        /// </summary>
+        private async Task refreshSignInAsync(ApplicationUser user, bool isPersistent)
         {
             _authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
-            await _userManager.UpdateSecurityStampAsync(user.Id);
-            _authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent },
-                await _userManager.GenerateUserIdentityAsync(user));
+            // await _userManager.UpdateSecurityStampAsync(user.Id).ConfigureAwait(false); // = used for SignOutEverywhere functionality
+            var claimsIdentity = await _userManager.GenerateUserIdentityAsync(user).ConfigureAwait(false);
+            _authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, claimsIdentity);
         }
     }
 }
