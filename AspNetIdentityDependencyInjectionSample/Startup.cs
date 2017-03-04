@@ -31,10 +31,8 @@ namespace AspNetIdentityDependencyInjectionSample
             });
             container.GetInstance<IApplicationUserManager>().SeedDatabase();
 
-            app.CreatePerOwinContext(() => (ApplicationDbContext)container.GetInstance<IUnitOfWork>());
+            // This is necessary for `GenerateUserIdentityAsync` and `SecurityStampValidator` to work internally by ASP.NET Identity 2.x
             app.CreatePerOwinContext(() => (ApplicationUserManager)container.GetInstance<IApplicationUserManager>());
-            app.CreatePerOwinContext(() => (ApplicationSignInManager)container.GetInstance<IApplicationSignInManager>());
-            app.CreatePerOwinContext(() => (ApplicationRoleManager)container.GetInstance<IApplicationRoleManager>());
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
