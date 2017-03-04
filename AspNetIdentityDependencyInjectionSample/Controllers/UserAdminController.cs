@@ -25,7 +25,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         public async Task<ActionResult> Create()
         {
             //Get the list of Roles
-            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
+            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false), "Name", "Name");
             return View();
         }
 
@@ -37,18 +37,18 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = userViewModel.Email, Email = userViewModel.Email };
-                var adminresult = await _userManager.CreateAsync(user, userViewModel.Password);
+                var adminresult = await _userManager.CreateAsync(user, userViewModel.Password).ConfigureAwait(false);
 
                 //Add User to the selected Roles
                 if (adminresult.Succeeded)
                 {
                     if (selectedRoles != null)
                     {
-                        var result = await _userManager.AddToRolesAsync(user.Id, selectedRoles);
+                        var result = await _userManager.AddToRolesAsync(user.Id, selectedRoles).ConfigureAwait(false);
                         if (!result.Succeeded)
                         {
                             ModelState.AddModelError("", result.Errors.First());
-                            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
+                            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false), "Name", "Name");
                             return View();
                         }
                     }
@@ -56,13 +56,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 else
                 {
                     ModelState.AddModelError("", adminresult.Errors.First());
-                    ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
+                    ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false), "Name", "Name");
                     return View();
 
                 }
                 return RedirectToAction("Index");
             }
-            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync(), "Name", "Name");
+            ViewBag.RoleId = new SelectList(await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false), "Name", "Name");
             return View();
         }
 
@@ -74,7 +74,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var user = await _userManager.FindByIdAsync(id.Value);
+            var user = await _userManager.FindByIdAsync(id.Value).ConfigureAwait(false);
             if (user == null)
             {
                 return HttpNotFound();
@@ -95,13 +95,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
-                var user = await _userManager.FindByIdAsync(id.Value);
+                var user = await _userManager.FindByIdAsync(id.Value).ConfigureAwait(false);
                 if (user == null)
                 {
                     return HttpNotFound();
                 }
 
-                var result = await _userManager.DeleteAsync(user);
+                var result = await _userManager.DeleteAsync(user).ConfigureAwait(false);
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", result.Errors.First());
@@ -121,9 +121,9 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var user = await _userManager.FindByIdAsync(id.Value);
+            var user = await _userManager.FindByIdAsync(id.Value).ConfigureAwait(false);
 
-            ViewBag.RoleNames = await _userManager.GetRolesAsync(user.Id);
+            ViewBag.RoleNames = await _userManager.GetRolesAsync(user.Id).ConfigureAwait(false);
 
             return View(user);
         }
@@ -136,19 +136,19 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var user = await _userManager.FindByIdAsync(id.Value);
+            var user = await _userManager.FindByIdAsync(id.Value).ConfigureAwait(false);
             if (user == null)
             {
                 return HttpNotFound();
             }
 
-            var userRoles = await _userManager.GetRolesAsync(user.Id);
+            var userRoles = await _userManager.GetRolesAsync(user.Id).ConfigureAwait(false);
 
             return View(new EditUserViewModel
             {
                 Id = user.Id,
                 Email = user.Email,
-                RolesList = (await _roleManager.GetAllCustomRolesAsync()).Select(x => new SelectListItem
+                RolesList = (await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false)).Select(x => new SelectListItem
                 {
                     Selected = userRoles.Contains(x.Name),
                     Text = x.Name,
@@ -165,7 +165,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByIdAsync(editUser.Id);
+                var user = await _userManager.FindByIdAsync(editUser.Id).ConfigureAwait(false);
                 if (user == null)
                 {
                     return HttpNotFound();
@@ -174,27 +174,27 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 user.UserName = editUser.Email;
                 user.Email = editUser.Email;
 
-                var userRoles = await _userManager.GetRolesAsync(user.Id);
+                var userRoles = await _userManager.GetRolesAsync(user.Id).ConfigureAwait(false);
 
                 selectedRole = selectedRole ?? new string[] { };
 
-                var result = await _userManager.AddToRolesAsync(user.Id, selectedRole.Except(userRoles).ToArray());
+                var result = await _userManager.AddToRolesAsync(user.Id, selectedRole.Except(userRoles).ToArray()).ConfigureAwait(false);
 
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                await _userManager.UpdateSecurityStampAsync(user.Id);
+                await _userManager.UpdateSecurityStampAsync(user.Id).ConfigureAwait(false);
 
-                result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray());
+                result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray()).ConfigureAwait(false);
 
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                await _userManager.UpdateSecurityStampAsync(user.Id);
+                await _userManager.UpdateSecurityStampAsync(user.Id).ConfigureAwait(false);
 
                 return RedirectToAction("Index");
             }
@@ -206,7 +206,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // GET: /Users/
         public async Task<ActionResult> Index()
         {
-            return View(await _userManager.GetAllUsersAsync());
+            return View(await _userManager.GetAllUsersAsync().ConfigureAwait(false));
         }
 
 

@@ -38,7 +38,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             if (ModelState.IsValid)
             {
                 var role = new CustomRole(roleViewModel.Name);
-                var roleresult = await _roleManager.CreateAsync(role);
+                var roleresult = await _roleManager.CreateAsync(role).ConfigureAwait(false);
                 if (!roleresult.Succeeded)
                 {
                     ModelState.AddModelError("", roleresult.Errors.First());
@@ -57,7 +57,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var role = await _roleManager.FindByIdAsync(id.Value);
+            var role = await _roleManager.FindByIdAsync(id.Value).ConfigureAwait(false);
             if (role == null)
             {
                 return HttpNotFound();
@@ -77,7 +77,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                var role = await _roleManager.FindByIdAsync(id.Value);
+                var role = await _roleManager.FindByIdAsync(id.Value).ConfigureAwait(false);
                 if (role == null)
                 {
                     return HttpNotFound();
@@ -85,11 +85,11 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 IdentityResult result;
                 if (deleteUser != null)
                 {
-                    result = await _roleManager.DeleteAsync(role);
+                    result = await _roleManager.DeleteAsync(role).ConfigureAwait(false);
                 }
                 else
                 {
-                    result = await _roleManager.DeleteAsync(role);
+                    result = await _roleManager.DeleteAsync(role).ConfigureAwait(false);
                 }
                 if (!result.Succeeded)
                 {
@@ -109,22 +109,22 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var role = await _roleManager.FindByIdAsync(id.Value);
+            var role = await _roleManager.FindByIdAsync(id.Value).ConfigureAwait(false);
             // Get the list of Users in this Role
             var users = new List<ApplicationUser>();
 
             // Get the list of Users in this Role
-            var allUsers = await _userManager.GetAllUsersAsync();
+            var allUsers = await _userManager.GetAllUsersAsync().ConfigureAwait(false);
             foreach (var user in allUsers)
             {
-                if (await _userManager.IsInRoleAsync(user.Id, role.Name))
+                if (await _userManager.IsInRoleAsync(user.Id, role.Name).ConfigureAwait(false))
                 {
                     users.Add(user);
                 }
             }
 
             ViewBag.Users = users;
-            ViewBag.UserCount = users.Count();
+            ViewBag.UserCount = users.Count;
             return View(role);
         }
 
@@ -136,7 +136,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var role = await _roleManager.FindByIdAsync(id.Value);
+            var role = await _roleManager.FindByIdAsync(id.Value).ConfigureAwait(false);
             if (role == null)
             {
                 return HttpNotFound();
@@ -153,9 +153,9 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var role = await _roleManager.FindByIdAsync(roleModel.Id);
+                var role = await _roleManager.FindByIdAsync(roleModel.Id).ConfigureAwait(false);
                 role.Name = roleModel.Name;
-                await _roleManager.UpdateAsync(role);
+                await _roleManager.UpdateAsync(role).ConfigureAwait(false);
                 return RedirectToAction("Index");
             }
             return View();
@@ -165,7 +165,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         // GET: /Roles/
         public async Task<ActionResult> Index()
         {
-            return View(await _roleManager.GetAllCustomRolesAsync());
+            return View(await _roleManager.GetAllCustomRolesAsync().ConfigureAwait(false));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
 
         public async Task<IHttpActionResult> Get(int id)
         {
-            var applicationUser = await _userManager.FindByIdAsync(id);
+            var applicationUser = await _userManager.FindByIdAsync(id).ConfigureAwait(false);
             if (applicationUser == null)
             {
                 return NotFound();

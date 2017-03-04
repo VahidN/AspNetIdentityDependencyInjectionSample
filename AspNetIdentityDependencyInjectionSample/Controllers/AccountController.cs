@@ -35,7 +35,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return View("Error");
             }
-            var result = await _userManager.ConfirmEmailAsync(userId.Value, code);
+            var result = await _userManager.ConfirmEmailAsync(userId.Value, code).ConfigureAwait(false);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
@@ -55,14 +55,14 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
-            var loginInfo = await _authenticationManager.GetExternalLoginInfoAsync();
+            var loginInfo = await _authenticationManager.GetExternalLoginInfoAsync().ConfigureAwait(false);
             if (loginInfo == null)
             {
                 return RedirectToAction("Login");
             }
 
             // Sign in the user with this external login provider if the user already has a login
-            var result = await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+            var result = await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false).ConfigureAwait(false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -94,19 +94,19 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
-                var info = await _authenticationManager.GetExternalLoginInfoAsync();
+                var info = await _authenticationManager.GetExternalLoginInfoAsync().ConfigureAwait(false);
                 if (info == null)
                 {
                     return View("ExternalLoginFailure");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user);
+                var result = await _userManager.CreateAsync(user).ConfigureAwait(false);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user.Id, info.Login);
+                    result = await _userManager.AddLoginAsync(user.Id, info.Login).ConfigureAwait(false);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await _signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false).ConfigureAwait(false);
                         return redirectToLocal(returnUrl);
                     }
                 }
@@ -142,17 +142,17 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user.Id)))
+                var user = await _userManager.FindByNameAsync(model.Email).ConfigureAwait(false);
+                if (user == null || !await _userManager.IsEmailConfirmedAsync(user.Id).ConfigureAwait(false))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
 
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user.Id).ConfigureAwait(false);
                 var callbackUrl = Url.Action("ResetPassword", "Account",
                     new { userId = user.Id, code }, protocol: Request.Url.Scheme);
-                await _userManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                await _userManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>").ConfigureAwait(false);
                 ViewBag.Link = callbackUrl;
                 return View("ForgotPasswordConfirmation");
             }
@@ -192,7 +192,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
 
             // This doesn't count login failures towards lockout only two factor authentication
             // To enable password failures to trigger lockout, change to shouldLockout: true
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false).ConfigureAwait(false);
 
             /*var userName = User.Identity.GetUserName();
             if (string.IsNullOrWhiteSpace(userName))
@@ -220,9 +220,9 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> LogOff()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name).ConfigureAwait(false);
             _authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            await _userManager.UpdateSecurityStampAsync(user.Id);
+            await _userManager.UpdateSecurityStampAsync(user.Id).ConfigureAwait(false); //signout everywhere
 
             return RedirectToAction("Index", "Home");
         }
@@ -245,13 +245,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(false);
                 if (result.Succeeded)
                 {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id).ConfigureAwait(false);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account",
                         new { userId = user.Id, code }, protocol: Request.Url.Scheme);
-                    await _userManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    await _userManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>").ConfigureAwait(false);
                     ViewBag.Link = callbackUrl;
                     return View("DisplayEmail");
                 }
@@ -281,13 +281,13 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(model.Email).ConfigureAwait(false);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
-            var result = await _userManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            var result = await _userManager.ResetPasswordAsync(user.Id, model.Code, model.Password).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
@@ -309,12 +309,12 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl)
         {
-            var userId = await _signInManager.GetVerifiedUserIdAsync();
+            var userId = await _signInManager.GetVerifiedUserIdAsync().ConfigureAwait(false);
             /*if (userId == null)
             {
                 return View("Error");
             }*/
-            var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(userId);
+            var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(userId).ConfigureAwait(false);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl });
         }
@@ -332,7 +332,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             }
 
             // Generate the token and send it
-            if (!await _signInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
+            if (!await _signInManager.SendTwoFactorCodeAsync(model.SelectedProvider).ConfigureAwait(false))
             {
                 return View("Error");
             }
@@ -345,14 +345,14 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl)
         {
             // Require that the user has already logged in via username/password or external login
-            if (!await _signInManager.HasBeenVerifiedAsync())
+            if (!await _signInManager.HasBeenVerifiedAsync().ConfigureAwait(false))
             {
                 return View("Error");
             }
-            var user = await _userManager.FindByIdAsync(await _signInManager.GetVerifiedUserIdAsync());
+            var user = await _userManager.FindByIdAsync(await _signInManager.GetVerifiedUserIdAsync().ConfigureAwait(false)).ConfigureAwait(false);
             if (user != null)
             {
-                ViewBag.Status = "For DEMO purposes the current " + provider + " code is: " + await _userManager.GenerateTwoFactorTokenAsync(user.Id, provider);
+                ViewBag.Status = "For DEMO purposes the current " + provider + " code is: " + await _userManager.GenerateTwoFactorTokenAsync(user.Id, provider).ConfigureAwait(false);
             }
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl });
         }
@@ -369,7 +369,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: false, rememberBrowser: model.RememberBrowser);
+            var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: false, rememberBrowser: model.RememberBrowser).ConfigureAwait(false);
             switch (result)
             {
                 case SignInStatus.Success:

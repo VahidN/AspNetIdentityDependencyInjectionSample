@@ -56,7 +56,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUser applicationUser)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie);
+            var userIdentity = await CreateIdentityAsync(applicationUser, DefaultAuthenticationTypes.ApplicationCookie).ConfigureAwait(false);
 
             // Add custom user claims here
             userIdentity.AddClaim(new Claim("user-email", applicationUser.Email));
@@ -76,7 +76,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 
         public async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return _user ?? (_user = await this.FindByIdAsync(GetCurrentUserId()));
+            return _user ?? (_user = await this.FindByIdAsync(GetCurrentUserId()).ConfigureAwait(false));
         }
 
         public int GetCurrentUserId()
@@ -86,13 +86,13 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
 
         public async Task<bool> HasPassword(int userId)
         {
-            var user = await FindByIdAsync(userId);
+            var user = await FindByIdAsync(userId).ConfigureAwait(false);
             return user != null && user.PasswordHash != null;
         }
 
         public async Task<bool> HasPhoneNumber(int userId)
         {
-            var user = await FindByIdAsync(userId);
+            var user = await FindByIdAsync(userId).ConfigureAwait(false);
             return user != null && user.PhoneNumber != null;
         }
 
