@@ -317,6 +317,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ChallengeResult.cs" />
+    <Compile Include="Helpers\SystemWebCookieManager.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Models\AddPhoneNumberViewModel.cs" />
     <Compile Include="Models\ChangePasswordViewModel.cs" />

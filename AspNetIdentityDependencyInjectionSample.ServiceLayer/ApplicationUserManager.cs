@@ -100,8 +100,8 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
         {
             return SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser, int>(
                          validateInterval: TimeSpan.FromSeconds(0),
-                         regenerateIdentityCallback: (manager, user) => GenerateUserIdentityAsync(user),
-                         getUserIdCallback: id => id.GetUserId<int>());
+                         regenerateIdentityCallback: (manager, user) => manager.GenerateUserIdentityAsync(user),
+                         getUserIdCallback: claimsIdentity => claimsIdentity.GetUserId<int>());
         }
 
         public void SeedDatabase()
@@ -116,7 +116,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             {
                 role = new CustomRole(roleName);
                 var roleResult = _roleManager.CreateRole(role);
-                if(!roleResult.Succeeded)
+                if (!roleResult.Succeeded)
                 {
                     throw new InvalidOperationException(string.Join(", ", roleResult.Errors));
                 }
@@ -127,13 +127,13 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             {
                 user = new ApplicationUser { UserName = name, Email = name };
                 var createResult = this.Create(user, password);
-                if(!createResult.Succeeded)
+                if (!createResult.Succeeded)
                 {
                     throw new InvalidOperationException(string.Join(", ", createResult.Errors));
                 }
 
                 var setLockoutResult = this.SetLockoutEnabled(user.Id, false);
-                if(!setLockoutResult.Succeeded)
+                if (!setLockoutResult.Succeeded)
                 {
                     throw new InvalidOperationException(string.Join(", ", setLockoutResult.Errors));
                 }
@@ -144,7 +144,7 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             if (!rolesForUser.Contains(role.Name))
             {
                 var addToRoleResult = this.AddToRole(user.Id, role.Name);
-                if(!addToRoleResult.Succeeded)
+                if (!addToRoleResult.Succeeded)
                 {
                     throw new InvalidOperationException(string.Join(", ", addToRoleResult.Errors));
                 }

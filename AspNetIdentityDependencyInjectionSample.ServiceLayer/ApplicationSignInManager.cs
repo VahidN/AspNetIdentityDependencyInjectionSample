@@ -1,4 +1,6 @@
-﻿using AspNetIdentityDependencyInjectionSample.DomainClasses;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
+using AspNetIdentityDependencyInjectionSample.DomainClasses;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -20,5 +22,10 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer
             _userManager = userManager;
             _authenticationManager = authenticationManager;
         }
+
+        //public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
+        //{
+        //    return _userManager.GenerateUserIdentityAsync(user);
+        //}
     }
 }

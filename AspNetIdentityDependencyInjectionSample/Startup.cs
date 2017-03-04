@@ -1,4 +1,4 @@
-﻿using AspNetIdentityDependencyInjectionSample.DataLayer.Context;
+﻿using AspNetIdentityDependencyInjectionSample.Helpers;
 using AspNetIdentityDependencyInjectionSample.IocConfig;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts;
 using AspNetIdentityDependencyInjectionSample.ServiceLayer;
@@ -41,7 +41,7 @@ namespace AspNetIdentityDependencyInjectionSample
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
-                CookieName = "my-very-own-cookie-name",
+                CookieName = ".mySampleAppCookieName",
                 ExpireTimeSpan = TimeSpan.FromDays(30),
                 Provider = new CookieAuthenticationProvider
                 {
@@ -49,7 +49,8 @@ namespace AspNetIdentityDependencyInjectionSample
                     // This is a security feature which is used when you change a password or add an external login to your account.
                     OnValidateIdentity = container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
                 },
-                SlidingExpiration = false
+                SlidingExpiration = false,
+                CookieManager = new SystemWebCookieManager()
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
