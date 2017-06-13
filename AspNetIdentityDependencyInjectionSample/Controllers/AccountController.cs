@@ -190,16 +190,14 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 return View(model);
             }
 
+            // NOTE: You must add your claims **before** sign the user in.
+            // At the end of its execution chain SignInManager.PasswordSignInAsync method calls for SignInAsync method
+            // which is basically responsible for setting an authentication cookie which contains multiple claims about
+            // a user (one of them is its name).
+
             // This doesn't count login failures towards lockout only two factor authentication
             // To enable password failures to trigger lockout, change to shouldLockout: true
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false).ConfigureAwait(false);
-
-            /*var userName = User.Identity.GetUserName();
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-
-            }*/
-
             switch (result)
             {
                 case SignInStatus.Success:

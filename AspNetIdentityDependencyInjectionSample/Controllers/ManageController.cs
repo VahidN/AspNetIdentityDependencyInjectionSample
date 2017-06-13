@@ -17,13 +17,16 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
         private const string XsrfKey = "XsrfId";
 
         private readonly IAuthenticationManager _authenticationManager;
+        private readonly IApplicationSignInManager _applicationSignInManager;
         private readonly IApplicationUserManager _userManager;
         public ManageController(
             IApplicationUserManager userManager,
-            IAuthenticationManager authenticationManager)
+            IAuthenticationManager authenticationManager,
+            IApplicationSignInManager applicationSignInManager)
         {
             _userManager = userManager;
             _authenticationManager = authenticationManager;
+            _applicationSignInManager = applicationSignInManager;
         }
 
         //
@@ -81,7 +84,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
                 if (user != null)
                 {
-                    await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                    await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
@@ -98,7 +101,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
             if (user != null)
             {
-                await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -112,7 +115,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
             if (user != null)
             {
-                await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -230,7 +233,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
                 if (user != null)
                 {
-                    await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                    await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
                 }
                 message = ManageMessageId.RemoveLoginSuccess;
             }
@@ -252,7 +255,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
             if (user != null)
             {
-                await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
@@ -278,7 +281,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                     var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
                     if (user != null)
                     {
-                        await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                        await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
                     }
                     return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
                 }
@@ -316,7 +319,7 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
                 var user = await _userManager.GetCurrentUserAsync().ConfigureAwait(false);
                 if (user != null)
                 {
-                    await refreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
+                    await _applicationSignInManager.RefreshSignInAsync(user, isPersistent: false).ConfigureAwait(false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
             }
@@ -330,17 +333,6 @@ namespace AspNetIdentityDependencyInjectionSample.Controllers
             {
                 ModelState.AddModelError("", error);
             }
-        }
-
-        /// <summary>
-        /// How to refresh authentication cookies
-        /// </summary>
-        private async Task refreshSignInAsync(ApplicationUser user, bool isPersistent)
-        {
-            _authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
-            // await _userManager.UpdateSecurityStampAsync(user.Id).ConfigureAwait(false); // = used for SignOutEverywhere functionality
-            var claimsIdentity = await _userManager.GenerateUserIdentityAsync(user).ConfigureAwait(false);
-            _authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, claimsIdentity);
         }
     }
 }

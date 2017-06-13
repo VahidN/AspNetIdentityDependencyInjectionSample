@@ -86,5 +86,10 @@ namespace AspNetIdentityDependencyInjectionSample.ServiceLayer.Contracts
         /// <param name="userName"/><param name="password"/><param name="isPersistent"/><param name="shouldLockout"/>
         /// <returns/>
         Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout);
+
+        /// <summary>
+        /// How to refresh authentication cookies
+        /// </summary>
+        Task RefreshSignInAsync(ApplicationUser user, bool isPersistent);
     }
 }
