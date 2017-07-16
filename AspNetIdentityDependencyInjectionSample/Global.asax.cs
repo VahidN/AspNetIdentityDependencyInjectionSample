@@ -39,7 +39,9 @@ namespace AspNetIdentityDependencyInjectionSample
             protected override IController GetControllerInstance(RequestContext requestContext, Type controllerType)
             {
                 if (controllerType == null)
-                    throw new InvalidOperationException(string.Format("Page not found: {0}", requestContext.HttpContext.Request.RawUrl));
+                {
+                    throw new HttpException(404, $"Resource not found : {requestContext.HttpContext.Request.Path}");
+                }
                 return SmObjectFactory.Container.GetInstance(controllerType) as Controller;
             }
         }
