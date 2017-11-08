@@ -9,6 +9,9 @@ using Microsoft.Owin;
 using Owin;
 using StructureMap.Web;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Optimization;
 
 namespace AspNetIdentityDependencyInjectionSample
 {
@@ -47,7 +50,14 @@ namespace AspNetIdentityDependencyInjectionSample
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.
-                    OnValidateIdentity = container.GetInstance<IApplicationUserManager>().OnValidateIdentity()
+                    OnValidateIdentity = context =>
+                    {
+                        if(shouldIgnoreRequest(context)) // How to ignore Authentication Validations for static files in ASP.NET Identity
+                        {
+                            return Task.FromResult(0);
+                        }
+                        return container.GetInstance<IApplicationUserManager>().OnValidateIdentity().Invoke(context);
+                    }
                 },
                 SlidingExpiration = false,
                 CookieManager = new SystemWebCookieManager()
@@ -80,6 +90,22 @@ namespace AspNetIdentityDependencyInjectionSample
             //    clientSecret: "");
 
             app.MapSignalR();
+        }
+
+        private static bool shouldIgnoreRequest(CookieValidateIdentityContext context)
+        {
+            string[] reservedPath =
+            {
+                "/__browserLink",
+                "/img",
+                "/fonts",
+                "/Scripts",
+                "/Content",
+                "/Uploads",
+                "/Images"
+            };
+            return reservedPath.Any(path => context.OwinContext.Request.Path.Value.StartsWith(path, StringComparison.OrdinalIgnoreCase)) ||
+                               BundleTable.Bundles.Select(bundle => bundle.Path.TrimStart('~')).Any(bundlePath => context.OwinContext.Request.Path.Value.StartsWith(bundlePath,StringComparison.OrdinalIgnoreCase));
         }
     }
 }
